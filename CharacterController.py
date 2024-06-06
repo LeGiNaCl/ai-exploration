@@ -60,4 +60,6 @@ class CharacterController:
     def useItem(self):
         self.toggleKey('space')
         
+    def visualize(self, framebuffer):
+        return
         

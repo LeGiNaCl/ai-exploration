@@ -1,11 +1,44 @@
 import win32com.client as comclt
+import win32ui as wui
 import win32gui as wgui
 import win32process as wproc
 import win32api as wapi
+from ctypes import windll
 import pyautogui
 import time 
 import random 
 import CharacterController 
+from PIL import Image
+
+def get_framebuffer(handle):
+    left, top, right, bot = wgui.GetWindowRect(handle)
+    w = right - left
+    h = bot - top
+    handleDC = wgui.GetWindowDC(handle)
+    mfcDC = wui.CreateDCFromHandle(handleDC)
+    saveDC = mfcDC.CreateCompatibleDC()
+    
+    saveBitMap = wui.CreateBitmap()
+    saveBitMap.CreateCompatibleBitmap(mfcDC, w, h)
+    
+    saveDC.SelectObject(saveBitMap)
+    
+    result = windll.user32.PrintWindow(handle, saveDC.GetSafeHdc(), 0)
+    bmpinfo = saveBitMap.GetInfo()
+    bmpstr = saveBitMap.GetBitmapBits(True)
+
+    im = Image.frombuffer(
+        'RGB',
+        (bmpinfo['bmWidth'], bmpinfo['bmHeight']),
+        bmpstr, 'raw', 'BGRX', 0, 1)
+
+    wgui.DeleteObject(saveBitMap.GetHandle())
+    saveDC.DeleteDC()
+    mfcDC.DeleteDC()
+    wgui.ReleaseDC(handle, handleDC)
+
+    return result, im
+    
 
 def main(*argv):
     print("AI Game Solver for Binding of Isaac")
@@ -21,7 +54,7 @@ def main(*argv):
         return
     remote_thread, _ = wproc.GetWindowThreadProcessId(handle)
     wproc.AttachThreadInput(wapi.GetCurrentThreadId(), remote_thread, True)
-    prev_handle = wgui.SetFocus(handle)
+    wgui.SetFocus(handle)
     
     pyautogui.keyDown('esc')
     time.sleep(0.01)
@@ -30,6 +63,9 @@ def main(*argv):
     player = CharacterController.CharacterController()
     
     while(True):
+        result, framebuf = get_framebuffer(handle)
+        if result == 1:
+            player.visualize(framebuffer=framebuf)
         action = random.randint(0,13)
         if action == 0:
             player.moveNorth()
