@@ -54,3 +54,10 @@ class CharacterController:
     def shootSouth(self):
         self.toggleKey('down')
         
+    def useBomb(self):
+        self.toggleKey('e')
+        
+    def useItem(self):
+        self.toggleKey('space')
+        
+        

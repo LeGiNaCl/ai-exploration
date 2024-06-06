@@ -30,7 +30,7 @@ def main(*argv):
     player = CharacterController.CharacterController()
     
     while(True):
-        action = random.randint(0,11)
+        action = random.randint(0,13)
         if action == 0:
             player.moveNorth()
         elif action == 1:
@@ -55,6 +55,10 @@ def main(*argv):
             player.shootSouth()
         elif action == 11:
             player.shootWest()
+        elif action == 12:
+            player.useBomb()
+        elif action == 13:
+            player.useItem()
         
 if __name__ == '__main__':
     main()
