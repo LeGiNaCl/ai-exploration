@@ -36,10 +36,10 @@ def main(*argv):
     screen = ScreenRead.ScreenRead()
     
     while(True):
-        result, framebuf = screen.get_framebuffer(handle)
-        result, minimap = screen.get_minimap(handle)
+        result, image = screen.process_image(handle)
+
         if result == 1:
-            player.visualize(framebuffer=framebuf)
+            player.visualize(framebuffer=image)
         action = random.randint(0,13)
         if action == 0:
             player.moveNorth()
